@@ -45,5 +45,15 @@ namespace Breakline.Tests.EditMode
             Assert.That(summary.NewTrophies, Is.EqualTo(520));
             Assert.That(summary.NewTier.TierId, Is.EqualTo(RankTierId.Gold));
         }
+
+        [Test]
+        public void ResultSummary_AppliesWinStreakBonus_WhenEnabled()
+        {
+            var result = new MatchResult(false, 0, 3, 1, MatchEndReason.TimeExpired);
+            var summary = ResultSummaryGenerator.Create(result, 200, 0, true, 4);
+
+            Assert.That(summary.TrophyDelta, Is.EqualTo(34));
+            Assert.That(summary.NewTrophies, Is.EqualTo(234));
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace Breakline.Runtime.Match
         [SerializeField] private List<BreaklineSpawnPoint> spawnPoints = new();
         [SerializeField] private BreaklineHudBridge hudBridge;
         [SerializeField] private RingOutMonitor ringOutMonitor;
+        [SerializeField] private LocalTrophyProgress localTrophyProgress;
 
         private readonly Dictionary<int, BreaklineSpawnPoint> _spawnLookup = new();
         private MatchClock _clock;
@@ -127,7 +128,13 @@ namespace Breakline.Runtime.Match
             }
 
             var result = MatchResultCalculator.Calculate(_scoreboard);
-            var trophyResult = TrophyResultCalculator.CalculatePlaceholder(result);
+            var resultSummary = localTrophyProgress != null
+                ? localTrophyProgress.ApplyMatchResult(result)
+                : ResultSummaryGenerator.Create(result, 0);
+            var trophyResult = new TrophyResult(
+                resultSummary.Headline,
+                resultSummary.TrophyDelta,
+                resultSummary.NewTier.TierId);
             MatchCompleted?.Invoke(result, trophyResult);
             PublishHud(result, trophyResult);
         }
